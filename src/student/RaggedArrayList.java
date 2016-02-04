@@ -185,6 +185,19 @@ public class RaggedArrayList<E> implements Iterable<E> {
      */
     public ListLoc findFront(E item) {
         // TO DO
+        int x=0,y=0;
+        //Loop for X Coords (Lvl 1)
+        while(x < l1NumUsed){
+            //Loop for Y Coords (Lvl 2)
+            //Check if Item exists in Lvl2
+            while(y < size && comp.compare(item, (E)(L2Array)l1Array[y]) <= 0){
+                int i = comp.compare(item, (E)(L2Array)l1Array[y]);
+                if(i == -1){
+                    
+                }
+                   
+            }
+        }
 
         return null;            // when finished should return: new ListLoc(l1,l2);
     }
