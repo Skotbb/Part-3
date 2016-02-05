@@ -185,21 +185,32 @@ public class RaggedArrayList<E> implements Iterable<E> {
      */
     public ListLoc findFront(E item) {
         // TO DO
-        int x=0,y=0;
+        int x, y=0, i=0;
+        L2Array l2Array = (L2Array) l1Array[0];
         //Loop for X Coords (Lvl 1)
-        while(x < l1NumUsed){
+        for(x=0; x < l1NumUsed && comp.compare(item, l2Array.items[y]) != 0; x++){
             //Loop for Y Coords (Lvl 2)
             //Check if Item exists in Lvl2
-            while(y < size && comp.compare(item, (E)(L2Array)l1Array[y]) <= 0){
-                int i = comp.compare(item, (E)(L2Array)l1Array[y]);
-                if(i == -1){
-                    
+            System.out.println("Loop# " + x);
+            if(comp.compare(item, l2Array.items[0]) == 0){
+                y = 0; System.out.println("Y= " + y);
+            }else{
+                while(l2Array.items[y+1] != null && comp.compare(item, l2Array.items[y]) != 0){
+                    y++;
+                    i = y;
+                    if(i == -1 && i < l2Array.numUsed ){    //Before item.
+                        i++;    //Advance to where item should be
+                        if(comp.compare(item, l2Array.items[i]) == 0 &&  //If item matches
+                                i < l2Array.numUsed){ 
+                            i++;    //Put item behind match
+                        }
+                    }
                 }
-                   
-            }
+            } System.out.println("X= " + x);
+            l2Array = (L2Array) l1Array[x];
         }
 
-        return null;            // when finished should return: new ListLoc(l1,l2);
+        return new ListLoc(x, y);            // when finished should return: new ListLoc(l1,l2);
     }
 
 
