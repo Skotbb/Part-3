@@ -185,31 +185,38 @@ public class RaggedArrayList<E> implements Iterable<E> {
      */
     public ListLoc findFront(E item) {
         // TO DO
-        int x, y=0, i=0;
+        int x=0, y=0, i=0, j=0;
         L2Array l2Array = (L2Array) l1Array[0];
         //Loop for X Coords (Lvl 1)
-        for(x=0; x < l1NumUsed && comp.compare(item, l2Array.items[y]) != 0; x++){
+        for(i=0; i < l1Array.length-1 && comp.compare(item, l2Array.items[y]) != 0; i++){
+            System.out.println("Print Y"+y+" compare: " + comp.compare(item, l2Array.items[y]));
+            //y = 0;  //Reset Y coord and J
+            j = 0;
+            x = i;  //Set X Coord to i loop value
+            l2Array = (L2Array) l1Array[x]; //Make sure lvl1 matches X coord
             //Loop for Y Coords (Lvl 2)
-            //Check if Item exists in Lvl2
-            System.out.println("Loop# " + x);
-            if(comp.compare(item, l2Array.items[0]) == 0){
-                y = 0; System.out.println("Y= " + y);
+            
+            if(comp.compare(item, l2Array.items[0]) == 0){  //Check beginning of L2
+                y = 0;
+                x = i;
             }else{
-                while(l2Array.items[y+1] != null && comp.compare(item, l2Array.items[y]) != 0){
-                    y++;
-                    i = y;
-                    if(i == -1 && i < l2Array.numUsed ){    //Before item.
-                        i++;    //Advance to where item should be
-                        if(comp.compare(item, l2Array.items[i]) == 0 &&  //If item matches
-                                i < l2Array.numUsed){ 
-                            i++;    //Put item behind match
+                while(j <= l2Array.numUsed-1 && comp.compare(item, l2Array.items[j]) >= 0 &&  //Continue until it approaches
+                        comp.compare(item, l2Array.items[y]) != 0){ 
+                    if(comp.compare(item, l2Array.items[j]) == 0){
+                        y = j;
+                    }
+                    else if(comp.compare(item, l2Array.items[j]) == 1){ //If it's one off
+                        if(l2Array.items[j+1] != null){ //Check you don't set null
+                            y = j+1;        //Set it one forward.
                         }
+                    }else{
+                        System.out.println("Print J"+j+" compare: " + comp.compare(item, l2Array.items[j]));
+                        j++;
                     }
                 }
-            } System.out.println("X= " + x);
-            l2Array = (L2Array) l1Array[x];
+            }
         }
-
+        System.out.println("(" + x + ", " + y + ")");
         return new ListLoc(x, y);            // when finished should return: new ListLoc(l1,l2);
     }
 
