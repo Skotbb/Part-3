@@ -189,27 +189,32 @@ public class RaggedArrayList<E> implements Iterable<E> {
         L2Array l2Array = (L2Array) l1Array[0];
         //Loop for X Coords (Lvl 1)
         for(i=0; i < l1Array.length-1 && comp.compare(item, l2Array.items[y]) != 0; i++){
-            System.out.println("Print Y"+y+" compare: " + comp.compare(item, l2Array.items[y]));
+            
             //y = 0;  //Reset Y coord and J
             j = 0;
             x = i;  //Set X Coord to i loop value
             l2Array = (L2Array) l1Array[x]; //Make sure lvl1 matches X coord
             //Loop for Y Coords (Lvl 2)
             
-            if(comp.compare(item, l2Array.items[0]) == 0){  //Check beginning of L2
+            if(comp.compare(item, l2Array.items[0]) <= 0){  //Check beginning of L2
                 y = 0;
                 x = i;
-            }else{
+                return new ListLoc(x, y);  
+            }
+            else{
                 while(j <= l2Array.numUsed-1 && comp.compare(item, l2Array.items[j]) >= 0 &&  //Continue until it approaches
-                        comp.compare(item, l2Array.items[y]) != 0){ 
+                        comp.compare(item, l2Array.items[y]) != 0){
+                    System.out.println(item + " vs " + l2Array.items[j] + " " + comp.compare(item, l2Array.items[j]));
                     if(comp.compare(item, l2Array.items[j]) == 0){
                         y = j;
                     }
-                    else if(comp.compare(item, l2Array.items[j]) == 1){ //If it's one off
-                        if(l2Array.items[j+1] != null){ //Check you don't set null
-                            y = j+1;        //Set it one forward.
-                        }
-                    }else{
+//                    else if(comp.compare(item, l2Array.items[j]) == 1 &&
+//                            comp.compare(item, l2Array.items[j+1]) > 1){ //If it's one off
+//                        if(j+1 <= l2Array.numUsed-1){ //Check you don't set null
+//                            y = j+1;        //Set it one forward.
+//                        }
+//                    }
+                    else{
                         System.out.println("Print J"+j+" compare: " + comp.compare(item, l2Array.items[j]));
                         j++;
                     }
