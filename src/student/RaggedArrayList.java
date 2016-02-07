@@ -187,6 +187,10 @@ public class RaggedArrayList<E> implements Iterable<E> {
         // TO DO
         int x=0, y=0, i=0, j=0;
         L2Array l2Array = (L2Array) l1Array[0];
+        
+        if(size < 1){
+            return new ListLoc(0,0);
+        }
         //Loop for X Coords (Lvl 1)
         for(i=0; i < l1Array.length-1 && comp.compare(item, l2Array.items[y]) != 0; i++){
             
@@ -197,31 +201,38 @@ public class RaggedArrayList<E> implements Iterable<E> {
             //Loop for Y Coords (Lvl 2)
             
             if(comp.compare(item, l2Array.items[0]) <= 0){  //Check beginning of L2
-                y = 0;
                 x = i;
-                return new ListLoc(x, y);  
+                return new ListLoc(x, 0);  
             }
             else{
                 while(j <= l2Array.numUsed-1 && comp.compare(item, l2Array.items[j]) >= 0 &&  //Continue until it approaches
                         comp.compare(item, l2Array.items[y]) != 0){
-                    System.out.println(item + " vs " + l2Array.items[j] + " " + comp.compare(item, l2Array.items[j]));
                     if(comp.compare(item, l2Array.items[j]) == 0){
                         y = j;
                     }
-//                    else if(comp.compare(item, l2Array.items[j]) == 1 &&
-//                            comp.compare(item, l2Array.items[j+1]) > 1){ //If it's one off
-//                        if(j+1 <= l2Array.numUsed-1){ //Check you don't set null
-//                            y = j+1;        //Set it one forward.
-//                        }
-//                    }
+                    else if(comp.compare(item, l2Array.items[j]) == 1 && j+1 == l2Array.numUsed
+                            && x == l1NumUsed-1){
+                        return new ListLoc(x,j+1);
+                    }
+                    else if(comp.compare(item, l2Array.items[j]) == 1 &&   //If it's one off
+                            j+1 <= l2Array.numUsed-1){   //and the next is valid
+                        if(j+1 > l2Array.numUsed-1){ 
+                            return new ListLoc(x,j+1);  
+                        }
+                        else if(comp.compare(item, l2Array.items[j+1]) == 0){ //Check you don't set null
+                           return new ListLoc(x,j+1);
+                        }
+                        else if(comp.compare(item, l2Array.items[j+1]) < 0){ //Check you don't set null
+                            return new ListLoc(x,j+1);        //Set it one forward.
+                        }
+                        else j++;
+                    }
                     else{
-                        System.out.println("Print J"+j+" compare: " + comp.compare(item, l2Array.items[j]));
                         j++;
                     }
                 }
             }
         }
-        System.out.println("(" + x + ", " + y + ")");
         return new ListLoc(x, y);            // when finished should return: new ListLoc(l1,l2);
     }
 
