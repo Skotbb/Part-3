@@ -184,9 +184,53 @@ public class RaggedArrayList<E> implements Iterable<E> {
      * level 2 array
      */
     public ListLoc findFront(E item) {
-        // TO DO
-
-        return null;            // when finished should return: new ListLoc(l1,l2);
+        int x=0, y=0, i=0, j=0;
+        L2Array l2Array = (L2Array) l1Array[0];
+        
+        if(size < 1){       //If Array is empty, return (0,0)
+            return new ListLoc(0,0);
+        }
+        //Loop for X Coords (Lvl 1)
+        for(i=0; i < l1Array.length-1 && comp.compare(item, l2Array.items[y]) != 0; i++){
+            j = 0;  //Reset J coord
+            x = i;  //Set X Coord to i loop value
+            l2Array = (L2Array) l1Array[x]; //Make sure lvl1 matches X coord
+            
+            //Loop for Y Coords (Lvl 2)
+            if(comp.compare(item, l2Array.items[0]) <= 0){  //Check beginning of L2
+                x = i;
+                return new ListLoc(x, 0);  
+            }
+            else{
+                while(j <= l2Array.numUsed-1 && comp.compare(item, l2Array.items[j]) >= 0 &&  //Continue until it approaches
+                        comp.compare(item, l2Array.items[y]) != 0){
+                    if(comp.compare(item, l2Array.items[j]) == 0){  //If J matches
+                        y = j;
+                    }
+                    else if(comp.compare(item, l2Array.items[j]) == 1 &&    //If at end of L1/L2 array
+                            j+1 == l2Array.numUsed && x == l1NumUsed-1){
+                        return new ListLoc(x,j+1);
+                    }
+                    else if(comp.compare(item, l2Array.items[j]) == 1 &&   //If it's one off
+                            j+1 <= l2Array.numUsed-1){   //and the next is valid
+                        if(j+1 > l2Array.numUsed-1){ 
+                            return new ListLoc(x,j+1);  
+                        }
+                        else if(comp.compare(item, l2Array.items[j+1]) == 0){ //If next item matches
+                           return new ListLoc(x,j+1);
+                        }
+                        else if(comp.compare(item, l2Array.items[j+1]) < 0){ //If next item goes past
+                            return new ListLoc(x,j+1);        //Set it one forward.
+                        }
+                        else j++;
+                    }
+                    else{
+                        j++;
+                    }
+                }
+            }
+        }
+        return new ListLoc(x, y);
     }
 
 
