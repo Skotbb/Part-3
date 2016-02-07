@@ -9,7 +9,9 @@ import java.util.NoSuchElementException;
 import java.util.Random;
 import java.util.Scanner;
 
-/**
+/**Modified by: Jeremy Spofford
+ * Modified by: Scott Thompson
+ * 
  * RaggedArrayList.java
  *  
  * Initial starting code by Prof. Boothe Sep 2015
@@ -176,7 +178,8 @@ public class RaggedArrayList<E> implements Iterable<E> {
     }
 
 
-    /**
+    /**Coded by Scott Thompson
+     * 
      * find 1st matching entry
      * @param item  we are searching for a place to put.
      * @return ListLoc of 1st matching item or of 1st item greater than the 
@@ -234,7 +237,8 @@ public class RaggedArrayList<E> implements Iterable<E> {
     }
 
 
-    /**
+    /**Coded by Jeremy Spofford
+     * 
      * find location after the last matching entry or if no match, it finds 
      * the index of the next larger item this is the position to add a new 
      * entry this might be an unused slot at the end of a level 2 array
@@ -242,9 +246,29 @@ public class RaggedArrayList<E> implements Iterable<E> {
      * @return the location where this item should go 
      */
     public ListLoc findEnd(E item) {
-        // TO DO
-
-        return null; // when finished should return: new ListLoc(l1,l2);
+         // TO DO
+        L2Array currentArray = ((L2Array) l1Array[l1NumUsed - 1]);
+        ListLoc loc = new ListLoc(l1NumUsed - 1, currentArray.numUsed - 1);
+        if (loc.level2Index < 0) {
+            loc.level2Index = 0;
+        }
+        if (((L2Array) l1Array[loc.level1Index]).numUsed == 0) {
+            return loc;
+        }
+        for (int level1 = l1NumUsed - 1; level1 >= 0; level1--) {
+            currentArray = (L2Array) l1Array[level1];
+            for (int level2 = currentArray.numUsed - 1; level2 >= 0; level2--) {
+                int c = comp.compare(item, currentArray.items[level2]);
+                if (c >= 0) {
+                    loc.level1Index = level1;
+                    loc.level2Index = level2 + 1;
+                    return loc;
+                }
+            }
+        }
+        loc.level1Index = 0;
+        loc.level2Index = 0;
+        return loc; // when finished should return: new ListLoc(l1,l2);
     }
 
     /**
