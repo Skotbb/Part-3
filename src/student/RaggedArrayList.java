@@ -248,20 +248,23 @@ public class RaggedArrayList<E> implements Iterable<E> {
     public ListLoc findEnd(E item) {
          // TO DO
         L2Array currentArray = ((L2Array) l1Array[l1NumUsed - 1]);
+        // int x, y; 
         ListLoc loc = new ListLoc(l1NumUsed - 1, currentArray.numUsed - 1);
-        if (loc.level2Index < 0) {
+        if(loc.level1Index < 0 || loc.level2Index < 0){
             loc.level2Index = 0;
+           //loc.level1Index = 0;
         }
         if (((L2Array) l1Array[loc.level1Index]).numUsed == 0) {
             return loc;
         }
-        for (int level1 = l1NumUsed - 1; level1 >= 0; level1--) {
-            currentArray = (L2Array) l1Array[level1];
-            for (int level2 = currentArray.numUsed - 1; level2 >= 0; level2--) {
-                int c = comp.compare(item, currentArray.items[level2]);
+        for (int i = l1NumUsed - 1; i >= 0; i--) {
+            currentArray = (L2Array) l1Array[i];
+            for (int j = currentArray.numUsed - 1; j >= 0; j--) {
+                int c = comp.compare(item, currentArray.items[j]);
                 if (c >= 0) {
-                    loc.level1Index = level1;
-                    loc.level2Index = level2 + 1;
+                    loc.level1Index = i;
+                    loc.level2Index = j + 1;
+
                     return loc;
                 }
             }
@@ -270,6 +273,7 @@ public class RaggedArrayList<E> implements Iterable<E> {
         loc.level2Index = 0;
         return loc; // when finished should return: new ListLoc(l1,l2);
     }
+
 
     /**
      * add object after any other matching values findEnd will give the
