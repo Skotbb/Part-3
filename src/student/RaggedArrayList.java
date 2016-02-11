@@ -282,7 +282,25 @@ public class RaggedArrayList<E> implements Iterable<E> {
      * @return 
      */
     public boolean add(E item) {
-        // TO DO in part 4
+        ListLoc resultLoc = findEnd(item);  //Get insertion point
+        int xIndex = resultLoc.level1Index, //X index for insert
+            yIndex = resultLoc.level2Index; //Y index for insert
+        L2Array l2Array = (L2Array) l1Array[xIndex];    //Looking at target l2
+        
+        //TODO if l2 < l1 size, double array and add
+        if(l2Array.items.length <= l1Array.length){
+            l2Array.items = Arrays.copyOf(l2Array.items, l2Array.numUsed * 2);
+            for(int i = l2Array.numUsed; i > yIndex; i--){
+                l2Array.items[i] = l2Array.items[i-1];
+            }
+            l2Array.items[yIndex] = item;
+            l2Array.numUsed ++;
+        }else{
+          //TODO if l2 > l1 size, split in half and add.  
+        }
+        
+
+        
 
         return true;
     }
