@@ -9,7 +9,9 @@ import java.util.NoSuchElementException;
 import java.util.Random;
 import java.util.Scanner;
 
-/**
+/**Modified by: Jeremy Spofford
+ * Modified by: Scott Thompson
+ * 
  * RaggedArrayList.java
  *  
  * Initial starting code by Prof. Boothe Sep 2015
@@ -176,7 +178,8 @@ public class RaggedArrayList<E> implements Iterable<E> {
     }
 
 
-    /**
+    /**Coded by Scott Thompson
+     * 
      * find 1st matching entry
      * @param item  we are searching for a place to put.
      * @return ListLoc of 1st matching item or of 1st item greater than the 
@@ -184,13 +187,58 @@ public class RaggedArrayList<E> implements Iterable<E> {
      * level 2 array
      */
     public ListLoc findFront(E item) {
-        // TO DO
-
-        return null;            // when finished should return: new ListLoc(l1,l2);
+        int x=0, y=0, i=0, j=0;
+        L2Array l2Array = (L2Array) l1Array[0];
+        
+        if(size < 1){       //If Array is empty, return (0,0)
+            return new ListLoc(0,0);
+        }
+        //Loop for X Coords (Lvl 1)
+        for(i=0; i < l1Array.length-1 && comp.compare(item, l2Array.items[y]) != 0; i++){
+            j = 0;  //Reset J coord
+            x = i;  //Set X Coord to i loop value
+            l2Array = (L2Array) l1Array[x]; //Make sure lvl1 matches X coord
+            
+            //Loop for Y Coords (Lvl 2)
+            if(comp.compare(item, l2Array.items[0]) <= 0){  //Check beginning of L2
+                x = i;
+                return new ListLoc(x, 0);  
+            }
+            else{
+                while(j <= l2Array.numUsed-1 && comp.compare(item, l2Array.items[j]) >= 0 &&  //Continue until it approaches
+                        comp.compare(item, l2Array.items[y]) != 0){
+                    if(comp.compare(item, l2Array.items[j]) == 0){  //If J matches
+                        y = j;
+                    }
+                    else if(comp.compare(item, l2Array.items[j]) == 1 &&    //If at end of L1/L2 array
+                            j+1 == l2Array.numUsed && x == l1NumUsed-1){
+                        return new ListLoc(x,j+1);
+                    }
+                    else if(comp.compare(item, l2Array.items[j]) == 1 &&   //If it's one off
+                            j+1 <= l2Array.numUsed-1){   //and the next is valid
+                        if(j+1 > l2Array.numUsed-1){ 
+                            return new ListLoc(x,j+1);  
+                        }
+                        else if(comp.compare(item, l2Array.items[j+1]) == 0){ //If next item matches
+                           return new ListLoc(x,j+1);
+                        }
+                        else if(comp.compare(item, l2Array.items[j+1]) < 0){ //If next item goes past
+                            return new ListLoc(x,j+1);        //Set it one forward.
+                        }
+                        else j++;
+                    }
+                    else{
+                        j++;
+                    }
+                }
+            }
+        }
+        return new ListLoc(x, y);
     }
 
 
-    /**
+    /**Coded by Jeremy Spofford
+     * 
      * find location after the last matching entry or if no match, it finds 
      * the index of the next larger item this is the position to add a new 
      * entry this might be an unused slot at the end of a level 2 array
@@ -198,10 +246,34 @@ public class RaggedArrayList<E> implements Iterable<E> {
      * @return the location where this item should go 
      */
     public ListLoc findEnd(E item) {
-        // TO DO
+         // TO DO
+        L2Array currentArray = ((L2Array) l1Array[l1NumUsed - 1]);
+        // int x, y; 
+        ListLoc loc = new ListLoc(l1NumUsed - 1, currentArray.numUsed - 1);
+        if(loc.level1Index < 0 || loc.level2Index < 0){
+            loc.level2Index = 0;
+           //loc.level1Index = 0;
+        }
+        if (((L2Array) l1Array[loc.level1Index]).numUsed == 0) {
+            return loc;
+        }
+        for (int i = l1NumUsed - 1; i >= 0; i--) {
+            currentArray = (L2Array) l1Array[i];
+            for (int j = currentArray.numUsed - 1; j >= 0; j--) {
+                int c = comp.compare(item, currentArray.items[j]);
+                if (c >= 0) {
+                    loc.level1Index = i;
+                    loc.level2Index = j + 1;
 
-        return null; // when finished should return: new ListLoc(l1,l2);
+                    return loc;
+                }
+            }
+        }
+        loc.level1Index = 0;
+        loc.level2Index = 0;
+        return loc; // when finished should return: new ListLoc(l1,l2);
     }
+
 
     /**
      * add object after any other matching values findEnd will give the
