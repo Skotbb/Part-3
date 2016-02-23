@@ -275,14 +275,73 @@ public class RaggedArrayList<E> implements Iterable<E> {
     }
 
 
-    /**
+    /**Coded by Scott Thompson
      * add object after any other matching values findEnd will give the
      * insertion position
      * @param item
      * @return 
      */
     public boolean add(E item) {
-        // TO DO in part 4
+        ListLoc resultLoc = findEnd(item);  //Get insertion point
+        int xIndex = resultLoc.level1Index, //X index for insert
+            yIndex = resultLoc.level2Index; //Y index for insert
+        L2Array l2Array = (L2Array) l1Array[xIndex];    //Looking at target l2
+        L2Array l2Next;
+        
+        //Add, if there's room
+        if(l2Array.numUsed < l2Array.items.length-1){
+            for(int i = l2Array.numUsed; i > yIndex; i--){
+                l2Array.items[i] = l2Array.items[i-1];
+            }
+            l2Array.items[yIndex] = item;
+            l2Array.numUsed ++;
+        }
+
+        //if l2 < l1 size, double array and add
+        else if(l2Array.items.length < l1Array.length){
+            //Add more L1 slots, if needed.
+            if(l1NumUsed == l1Array.length-1){
+                l1Array = Arrays.copyOf(l1Array, l1Array.length * 2);
+            }
+            l2Array.items = Arrays.copyOf(l2Array.items, l2Array.items.length * 2);
+            for(int i = l2Array.numUsed; i > yIndex; i--){
+                l2Array.items[i] = l2Array.items[i-1];
+            }
+            l2Array.items[yIndex] = item;
+            l2Array.numUsed ++;
+        }else{
+            //Add more L1 slots, if needed.
+            if(l1NumUsed == l1Array.length-1){
+                l1Array = Arrays.copyOf(l1Array, l1Array.length * 2);
+            }
+            //if l2 > l1 size, split in half and add.
+            l2Array = (L2Array)l1Array[xIndex];
+            //Add Item to L2 Array
+            for(int i = l2Array.numUsed; i > yIndex; i--){  //Shift l2 array
+                l2Array.items[i] = l2Array.items[i-1];
+            }
+            l2Array.items[yIndex] = item;               //Add item, first
+            l2Array.numUsed ++;                     //Increment number used.
+            //Add new L1 item, and shift
+            for(int i = l1NumUsed; i > xIndex; i--){
+                l1Array[i] = l1Array[i-1];
+            }
+           
+            l1NumUsed++;        //Increment L1 number used.
+            l2Array = (L2Array)l1Array[xIndex];         //Set target L2 array
+            l1Array[xIndex+1] = new L2Array(l2Array.items.length); //Create clear pointer
+            l2Next = (L2Array)l1Array[xIndex+1];
+                        
+            System.arraycopy(l2Array.items, (int)l2Array.items.length/2,
+                    l2Next.items, 0, (int)l2Array.items.length/2);  //Copies code to next line
+            Arrays.fill(l2Array.items,(int)l2Array.items.length/2,
+                    l2Array.items.length, null);              //Clears last half
+            Arrays.fill(l2Next.items,(int)l2Next.items.length/2,
+                    l2Next.items.length, null);              //Clears last half
+            l2Array.numUsed = (int)l2Array.numUsed/2;       //Adjust number used.
+            l2Next.numUsed = l2Array.numUsed;
+        }
+        
 
         return true;
     }
