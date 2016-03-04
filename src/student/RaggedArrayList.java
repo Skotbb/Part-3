@@ -2,6 +2,7 @@ package student;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -295,6 +296,7 @@ public class RaggedArrayList<E> implements Iterable<E> {
             }
             l2Array.items[yIndex] = item;
             l2Array.numUsed ++;
+            size++;
         }
 
         //if l2 < l1 size, double array and add
@@ -309,6 +311,7 @@ public class RaggedArrayList<E> implements Iterable<E> {
             }
             l2Array.items[yIndex] = item;
             l2Array.numUsed ++;
+            size++;
         }else{
             //Add more L1 slots, if needed.
             if(l1NumUsed == l1Array.length-1){
@@ -322,6 +325,7 @@ public class RaggedArrayList<E> implements Iterable<E> {
             }
             l2Array.items[yIndex] = item;               //Add item, first
             l2Array.numUsed ++;                     //Increment number used.
+            size++;
             //Add new L1 item, and shift
             for(int i = l1NumUsed; i > xIndex; i--){
                 l1Array[i] = l1Array[i-1];
@@ -360,15 +364,28 @@ public class RaggedArrayList<E> implements Iterable<E> {
         return item.equals(targetL2.items[resultLoc.level2Index]);
     }
 
-    /**
+    /**Code by Daniel Jordan
+     * Modified by: Scott Thompson 3/3/16
      * copy the contents of the RaggedArrayList into the given array
      *
      * @param a - an array of the actual type and of the correct size
      * @return the filled in array
      */
     public E[] toArray(E[] a) {
-        // TO DO
-
+        ArrayList<E> list = new ArrayList<>();
+        Itr itr = new Itr();
+        
+        while(itr.hasNext()){
+            list.add(itr.next());
+        }        
+        if(a.length >= list.size()){
+            a = list.toArray(a);
+        }
+        else{
+            a = Arrays.copyOf(a, list.size());
+            a = list.toArray(a);
+        }
+        
         return a;
     }
 
@@ -393,6 +410,7 @@ public class RaggedArrayList<E> implements Iterable<E> {
      * the inner Itr() class (DONE)
      * @return 
      */
+    @Override
     public Iterator<E> iterator() {
         return new Itr();
     }
@@ -416,6 +434,7 @@ public class RaggedArrayList<E> implements Iterable<E> {
         /** by:ST
          * check if more items
          */
+        @Override
         public boolean hasNext() {
             L2Array l2Array = (L2Array) l1Array[loc.level1Index];
             
@@ -426,6 +445,7 @@ public class RaggedArrayList<E> implements Iterable<E> {
          * return item and move to next throws NoSuchElementException if off end
          * of list
          */
+        @Override
         public E next() {
             E item=null;
             L2Array l2;
@@ -444,7 +464,6 @@ public class RaggedArrayList<E> implements Iterable<E> {
                     loc.level1Index++;
                     l2 = (L2Array)l1Array[loc.level1Index];
                     loc.level2Index = 0;
-                    
                     return item;
                 }
             }
@@ -460,6 +479,7 @@ public class RaggedArrayList<E> implements Iterable<E> {
          * Remove is not implemented. Just use this code. 
          * (DONE)
          */
+        @Override
         public void remove() {
             throw new UnsupportedOperationException();
         }
