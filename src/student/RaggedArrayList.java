@@ -2,6 +2,7 @@ package student;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -190,7 +191,7 @@ public class RaggedArrayList<E> implements Iterable<E> {
         int x=0, y=0, i=0, j=0;
         L2Array l2Array = (L2Array) l1Array[0];
         
-        if(size < 1){       //If Array is empty, return (0,0)
+        if(l2Array.numUsed < 1){       //If Array is empty, return (0,0)
             return new ListLoc(0,0);
         }
         //Loop for X Coords (Lvl 1)
@@ -233,7 +234,7 @@ public class RaggedArrayList<E> implements Iterable<E> {
                 }
             }
         }
-        return new ListLoc(x, y);
+        return new ListLoc(x, y);   
     }
 
 
@@ -246,7 +247,7 @@ public class RaggedArrayList<E> implements Iterable<E> {
      * @return the location where this item should go 
      */
     public ListLoc findEnd(E item) {
-         // TO DO
+         
         L2Array currentArray = ((L2Array) l1Array[l1NumUsed - 1]);
         // int x, y; 
         ListLoc loc = new ListLoc(l1NumUsed - 1, currentArray.numUsed - 1);
@@ -295,6 +296,7 @@ public class RaggedArrayList<E> implements Iterable<E> {
             }
             l2Array.items[yIndex] = item;
             l2Array.numUsed ++;
+            size++;
         }
 
         //if l2 < l1 size, double array and add
@@ -309,6 +311,7 @@ public class RaggedArrayList<E> implements Iterable<E> {
             }
             l2Array.items[yIndex] = item;
             l2Array.numUsed ++;
+            size++;
         }else{
             //Add more L1 slots, if needed.
             if(l1NumUsed == l1Array.length-1){
@@ -322,6 +325,7 @@ public class RaggedArrayList<E> implements Iterable<E> {
             }
             l2Array.items[yIndex] = item;               //Add item, first
             l2Array.numUsed ++;                     //Increment number used.
+            size++;
             //Add new L1 item, and shift
             for(int i = l1NumUsed; i > xIndex; i--){
                 l1Array[i] = l1Array[i-1];
@@ -346,26 +350,42 @@ public class RaggedArrayList<E> implements Iterable<E> {
         return true;
     }
 
-    /**
+    /** Coded by Scott Thompson
      * check if list contains a match
      * @param item
      * @return 
      */
     public boolean contains(E item) {
-        // TO DO
-
-        return false;
+            //Pull target location and set to resultLoc
+        ListLoc resultLoc = findFront(item);
+        L2Array targetL2 = (L2Array) l1Array[resultLoc.level1Index];
+            //Return result of comparison between the item, and the item
+            // where that item SHOULD be.
+        return item.equals(targetL2.items[resultLoc.level2Index]);
     }
 
-    /**
+    /**Code by Daniel Jordan
+     * Modified by: Scott Thompson 3/3/16
      * copy the contents of the RaggedArrayList into the given array
      *
      * @param a - an array of the actual type and of the correct size
      * @return the filled in array
      */
     public E[] toArray(E[] a) {
-        // TO DO
-
+        ArrayList<E> list = new ArrayList<>();
+        Itr itr = new Itr();
+        
+        while(itr.hasNext()){
+            list.add(itr.next());
+        }        
+        if(a.length >= list.size()){
+            a = list.toArray(a);
+        }
+        else{
+            a = Arrays.copyOf(a, list.size());
+            a = list.toArray(a);
+        }
+        
         return a;
     }
 
@@ -385,11 +405,12 @@ public class RaggedArrayList<E> implements Iterable<E> {
         return result;
     }
 
-    /**
+    /** All methods of Iterator by Scott Thompson
      * returns an iterator for this list this method just creates an instance of
      * the inner Itr() class (DONE)
      * @return 
      */
+    @Override
     public Iterator<E> iterator() {
         return new Itr();
     }
@@ -410,31 +431,80 @@ public class RaggedArrayList<E> implements Iterable<E> {
             loc = new ListLoc(0, 0);
         }
 
-        /**
+        /** by:ST
          * check if more items
          */
+        @Override
         public boolean hasNext() {
-            // TO DO
-
-            return false;
+            L2Array l2Array = (L2Array) l1Array[loc.level1Index];
+            
+            return loc.level1Index < l1NumUsed && loc.level2Index < l2Array.numUsed;
         }
 
-        /**
+        /** by:ST
          * return item and move to next throws NoSuchElementException if off end
          * of list
          */
+        @Override
         public E next() {
-            // TO DO
-
-            throw new IndexOutOfBoundsException();
+            E item=null;
+            L2Array l2;
+            
+            l2 = (L2Array)l1Array[loc.level1Index];
+            
+            while(loc.level1Index < l1NumUsed){
+                if(loc.level2Index < l2.numUsed-1){
+                    item = l2.items[loc.level2Index];
+                    loc.level2Index++;
+                    return item;
+                }
+                
+                if(loc.level2Index == l2.numUsed-1){
+                    item = l2.items[loc.level2Index];
+                    loc.level1Index++;
+                    l2 = (L2Array)l1Array[loc.level1Index];
+                    loc.level2Index = 0;
+                    return item;
+                }
+            }
+            if(loc.level1Index>= l1NumUsed || loc.level2Index >= l2.numUsed){
+                    throw new IndexOutOfBoundsException();
+                }
+            
+           
+            return item;
         }
 
         /**
          * Remove is not implemented. Just use this code. 
          * (DONE)
          */
+        @Override
         public void remove() {
             throw new UnsupportedOperationException();
         }
+    }
+    
+    public static void main(String[] args){
+        System.out.println("testing routine for RaggedArrayList");
+        String order = "qwertyuiopasdfghjklzxcvbnmaeiou";  // default test
+
+        // insert them character by character into the list
+        System.out.println("insertion order: " + order);
+        Comparator<String> comp = new RALtester3.StringCmp();
+        // reset the counter inside the comparator
+        ((CmpCnt) comp).resetCmpCnt();
+        RaggedArrayList<String> ralist = new RaggedArrayList<String>(comp);
+        for (int i = 0; i < order.length()-1; i++) {
+            String s = order.substring(i, i + 1);
+            System.out.println(s);
+            ralist.add(s);
+        }
+        
+        System.out.println(ralist.findFront("f").level2Index);
+        System.out.println("t/f? " + ralist.contains("f"));
+        System.out.println(ralist.findEnd("f").level2Index);
+        
+
     }
 }
