@@ -389,7 +389,7 @@ public class RaggedArrayList<E> implements Iterable<E> {
         return a;
     }
 
-    /**
+    /** Coded By: Scott Thompson 3/3/16
      * returns a new independent RaggedArrayList whose elements range from
      * fromElemnt, inclusive, to toElement, exclusive the original list is
      * unaffected findStart and findEnd will be useful
@@ -399,9 +399,19 @@ public class RaggedArrayList<E> implements Iterable<E> {
      * @return the sublist
      */
     public RaggedArrayList<E> subList(E fromElement, E toElement) {
-        // TO DO
-
+        ListLoc start = findFront(fromElement),
+                finish = findFront(toElement);
         RaggedArrayList<E> result = new RaggedArrayList<E>(comp);
+       
+        Itr itr = new Itr();
+        itr.loc = start;
+        
+        while(itr.hasNext() && !itr.loc.equals(finish)){
+            result.add(itr.next());
+        }
+        
+        
+        
         return result;
     }
 
