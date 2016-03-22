@@ -1,14 +1,10 @@
 package student;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.Random;
-import java.util.Scanner;
+
 
 /**Modified by: Jeremy Spofford
  * Modified by: Scott Thompson
@@ -166,7 +162,7 @@ public class RaggedArrayList<E> implements Iterable<E> {
             return level1Index == other.level1Index && 
                     level2Index == other.level2Index;
         }
-        /**
+        /**Coded By: Dr. Anne Applin
          * move ListLoc to next entry
          *  when it moves past the very last entry it will be 1 index past the 
          *  last value in the used level 2 array can be used internally to 
@@ -174,12 +170,19 @@ public class RaggedArrayList<E> implements Iterable<E> {
          *  the iterator
         */
         public void moveToNext() {
-            // TO DO
+            // TO DO in part 5
+            level2Index++;
+            if (level2Index >= ((L2Array)l1Array[level1Index]).numUsed){
+                if(level1Index+1 < l1NumUsed){
+                    level1Index++;
+                    level2Index = 0;
+                }
+            }            
         }
     }
 
 
-    /**Coded by Scott Thompson
+    /**Coded by Dr. Anne Applin
      * 
      * find 1st matching entry
      * @param item  we are searching for a place to put.
@@ -187,56 +190,35 @@ public class RaggedArrayList<E> implements Iterable<E> {
      * item if no match this might be an unused slot at the end of a 
      * level 2 array
      */
-    public ListLoc findFront(E item) {
-        int x=0, y=0, i=0, j=0;
-        L2Array l2Array = (L2Array) l1Array[0];
-        
-        if(l2Array.numUsed < 1){       //If Array is empty, return (0,0)
-            return new ListLoc(0,0);
+     public ListLoc findFront(E item) {
+        if (size == 0) {
+            return new ListLoc(0, 0);
         }
-        //Loop for X Coords (Lvl 1)
-        for(i=0; i < l1Array.length-1 && comp.compare(item, l2Array.items[y]) != 0; i++){
-            j = 0;  //Reset J coord
-            x = i;  //Set X Coord to i loop value
-            l2Array = (L2Array) l1Array[x]; //Make sure lvl1 matches X coord
-            
-            //Loop for Y Coords (Lvl 2)
-            if(comp.compare(item, l2Array.items[0]) <= 0){  //Check beginning of L2
-                x = i;
-                return new ListLoc(x, 0);  
-            }
-            else{
-                while(j <= l2Array.numUsed-1 && comp.compare(item, l2Array.items[j]) >= 0 &&  //Continue until it approaches
-                        comp.compare(item, l2Array.items[y]) != 0){
-                    if(comp.compare(item, l2Array.items[j]) == 0){  //If J matches
-                        y = j;
-                    }
-                    else if(comp.compare(item, l2Array.items[j]) == 1 &&    //If at end of L1/L2 array
-                            j+1 == l2Array.numUsed && x == l1NumUsed-1){
-                        return new ListLoc(x,j+1);
-                    }
-                    else if(comp.compare(item, l2Array.items[j]) == 1 &&   //If it's one off
-                            j+1 <= l2Array.numUsed-1){   //and the next is valid
-                        if(j+1 > l2Array.numUsed-1){ 
-                            return new ListLoc(x,j+1);  
-                        }
-                        else if(comp.compare(item, l2Array.items[j+1]) == 0){ //If next item matches
-                           return new ListLoc(x,j+1);
-                        }
-                        else if(comp.compare(item, l2Array.items[j+1]) < 0){ //If next item goes past
-                            return new ListLoc(x,j+1);        //Set it one forward.
-                        }
-                        else j++;
-                    }
-                    else{
-                        j++;
-                    }
-                }
-            }
+        int i1 = 0;
+        L2Array l2Array = (L2Array) l1Array[i1];
+        // linear search of l1 backwards until we find the right l2 array
+        while (i1 < l1NumUsed-1
+                && comp.compare(item, l2Array.items[l2Array.numUsed - 1]) > 0) {
+            i1++; // this could get us to NumUsed-1 but not above
+            l2Array = (L2Array) l1Array[i1];
         }
-        return new ListLoc(x, y);   
+        //System.out.println("the value of i1 is: " + i1);
+        int i2 = 0;
+        while (i2 < l2Array.numUsed
+                && comp.compare(item, l2Array.items[i2]) > 0) {
+            // stop at first match or larger value
+            i2++;
+        }
+        //System.out.println("the value of i2 is: " + i2);
+        if (comp.compare(item, l2Array.items[i2]) <= 0) {
+            //System.out.println("In if.");
+            return new ListLoc(i1, i2);
+        } else {
+            //System.out.println("In the else.");
+            return new ListLoc(l1NumUsed - 1, 
+                    ((L2Array) l1Array[l1NumUsed - 1]).numUsed);
+        }
     }
-
 
     /**Coded by Jeremy Spofford
      * 

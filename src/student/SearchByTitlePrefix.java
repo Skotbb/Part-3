@@ -20,7 +20,8 @@ public class SearchByTitlePrefix {
     public Comparator<Song> cmp;
 
     public SearchByTitlePrefix(SongCollection sc) {
-        cmp = new CmpTitle();
+        cmp = new Song.CmpTitle();
+        
         ((CmpCnt)cmp).resetCmpCnt();
         songs = new RaggedArrayList<>(cmp);
 
@@ -31,10 +32,10 @@ public class SearchByTitlePrefix {
     
     public Song[] search(String titlePrefix) {
         Song[] result = null;
-        // write this method
         // case insensitive
         titlePrefix = titlePrefix.toLowerCase();
-        // create a Song key with artistPrefix
+        // create a Song key with titlePrefix
+                
         Song key = new Song("", titlePrefix, "");
         System.out.println("Key: " + key);
         //Set the end character of key to the next letter    
@@ -45,20 +46,12 @@ public class SearchByTitlePrefix {
         System.out.println("end key: " + endKey);
         Song endSong = new Song("", endKey, "");    
         
-        // create a comparator object
-        cmp = new Song.CmpTitle();
-        
-        int x,y;
-        x = songs.findFront(key).level1Index;
-        y = songs.findFront(key).level2Index;
-        L2Array l2 = null;
-        l2 = (L2Array) songs.l1Array[x-1];
-        System.out.println("Song before: " + l2.items[l2.numUsed-1]);
         
         // create an arraylist to store the matches
         RaggedArrayList<Song> list = new RaggedArrayList<>(cmp);
         // artist comparison counter
         int count = ((CmpCnt) cmp).getCmpCnt();
+        System.out.println("Compares: " + count);
         
         list = songs.subList(key, endSong);
         
