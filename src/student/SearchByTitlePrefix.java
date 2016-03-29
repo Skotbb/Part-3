@@ -28,6 +28,7 @@ public class SearchByTitlePrefix {
         for (int i = 0; i < sc.getAllSongs().length - 1; i++) {
             songs.add(sc.getAllSongs()[i]);
         }
+        System.out.println("Compares: " + ((CmpCnt) cmp).getCmpCnt());
     }
     
     public Song[] search(String titlePrefix) {
@@ -49,12 +50,9 @@ public class SearchByTitlePrefix {
         
         // create an arraylist to store the matches
         RaggedArrayList<Song> list = new RaggedArrayList<>(cmp);
-        // artist comparison counter
-        int count = ((CmpCnt) cmp).getCmpCnt();
-        System.out.println("Compares: " + count);
-        
+        ((CmpCnt)cmp).resetCmpCnt();
         list = songs.subList(key, endSong);
-        
+        System.out.println("Compares: " + ((CmpCnt) cmp).getCmpCnt());
         result = new Song[list.size];
         result = list.toArray(result);
         
