@@ -5,6 +5,12 @@
  */
 package student;
 
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author Scott
@@ -23,14 +29,36 @@ public class SearchByLyricsPhrase {
        
     
     public Song[] search(String lyricPhrase){
+        ArrayList<Song> matchSongArray = new ArrayList<>();
+        TreeMap<Song, Integer> phraseMatchSongs = new TreeMap<>();
         Song[] listToSearch = null;
         int rank;
         
         listToSearch = lyricWords.search(lyricPhrase);
         for(int i = 0; i < listToSearch.length; i++){
             rank = PhraseRanking.rankPhrase(listToSearch[i].getLyrics(), lyricPhrase);
+            if(rank > 0){
+                phraseMatchSongs.put(listToSearch[i], rank);
+                matchSongArray.add(listToSearch[i]);
+            }
+            
+        }
+        phraseMatchSongs.forEach((k, v)->System.out.println(v +" "+ k.getArtist() +", "+ k.getTitle()));
+        
+        return matchSongArray.toArray(listToSearch);
+    }
+    
+    public static void main(String[] args){
+        Song[] songResults = null;
+        try {
+            SongCollection sc = new SongCollection("allSongs.txt");
+            SearchByLyricsPhrase searchLyricPhrase = new SearchByLyricsPhrase(sc);
+            
+            songResults = searchLyricPhrase.search("she loves you");
+        } catch (FileNotFoundException ex) {
+            System.out.println("File not found");;
         }
         
-        return null;
+        
     }
 }
