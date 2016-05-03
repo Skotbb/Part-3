@@ -108,12 +108,20 @@ public class PhraseRanking {
             //Start at the end of song and last word in phrase
             for(int i= wordInd.length-2; i >= 0; i--){
                 wordInd[i] = lyrics.lastIndexOf(phraseArray[i], wordInd[i+1]);
+                if(phraseArray[i].equals(phraseArray[i+1])){
+                    int letterCount = phraseArray[i].length();
+                    wordInd[i] = lyrics.lastIndexOf(phraseArray[i], wordInd[i+1] - letterCount);
+                }
             }
             firstWord = wordInd[0];
             
             //Start from the first word and make sure matches are as close as possible
             for(int i=1; i< phraseArray.length; i++){
                 wordInd[i] = lyrics.indexOf(phraseArray[i], wordInd[i-1]);
+                if(phraseArray[i].equals(phraseArray[i-1])){
+                    int letterCount = phraseArray[i].length();
+                    wordInd[i] = lyrics.indexOf(phraseArray[i], wordInd[i-1] + letterCount);
+                }
             }
             lastWord = wordInd[wordInd.length-1];
             
@@ -160,25 +168,25 @@ public class PhraseRanking {
         TreeMap<Song, Integer> songRanking = new TreeMap<Song, Integer>();
 
         //Single song debug
-//        SearchByTitlePrefix sbt = new SearchByTitlePrefix(sc);
-//        Song[] testArray = new Song[10];
-//        testArray = sbt.search("laura");
-//        for (int i = 0; i < testArray.length; i++) {
-//            rank = PhraseRanking.rankPhrase(testArray[i].getLyrics(), "she loves you");
-//        }
-
-        songSet.addAll(Arrays.asList(sc.getAllSongs()));
-        Iterator<Song> itr = songSet.iterator();
-        
-        while(itr.hasNext()){
-            current = itr.next();
-            //System.out.println("Current: " + current.getTitle());
-            rank = PhraseRanking.rankPhrase(current.getLyrics(), "You can't always get what you want");
-            
-            if(rank > -1){
-                songRanking.put(current, rank);
-            }
+        SearchByTitlePrefix sbt = new SearchByTitlePrefix(sc);
+        Song[] testArray = new Song[10];
+        testArray = sbt.search("life");
+        for (int i = 0; i < testArray.length; i++) {
+            rank = PhraseRanking.rankPhrase(testArray[i].getLyrics(), "love love love");
         }
+
+//        songSet.addAll(Arrays.asList(sc.getAllSongs()));
+//        Iterator<Song> itr = songSet.iterator();
+//        
+//        while(itr.hasNext()){
+//            current = itr.next();
+//            //System.out.println("Current: " + current.getTitle());
+//            rank = PhraseRanking.rankPhrase(current.getLyrics(), "You can't always get what you want");
+//            
+//            if(rank > -1){
+//                songRanking.put(current, rank);
+//            }
+//        }
         System.out.println("Results: " + songRanking.size());
         for(Map.Entry<Song, Integer> entry : songRanking.entrySet()){
             System.out.println("Rank: " + entry.getValue() +" "+ entry.getKey());
