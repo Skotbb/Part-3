@@ -168,25 +168,25 @@ public class PhraseRanking {
         TreeMap<Song, Integer> songRanking = new TreeMap<Song, Integer>();
 
         //Single song debug
-        SearchByTitlePrefix sbt = new SearchByTitlePrefix(sc);
-        Song[] testArray = new Song[10];
-        testArray = sbt.search("life");
-        for (int i = 0; i < testArray.length; i++) {
-            rank = PhraseRanking.rankPhrase(testArray[i].getLyrics(), "love love love");
-        }
-
-//        songSet.addAll(Arrays.asList(sc.getAllSongs()));
-//        Iterator<Song> itr = songSet.iterator();
-//        
-//        while(itr.hasNext()){
-//            current = itr.next();
-//            //System.out.println("Current: " + current.getTitle());
-//            rank = PhraseRanking.rankPhrase(current.getLyrics(), "You can't always get what you want");
-//            
-//            if(rank > -1){
-//                songRanking.put(current, rank);
-//            }
+//        SearchByTitlePrefix sbt = new SearchByTitlePrefix(sc);
+//        Song[] testArray = new Song[10];
+//        testArray = sbt.search("life");
+//        for (int i = 0; i < testArray.length; i++) {
+//            rank = PhraseRanking.rankPhrase(testArray[i].getLyrics(), "love love love");
 //        }
+
+        songSet.addAll(Arrays.asList(sc.getAllSongs()));
+        Iterator<Song> itr = songSet.iterator();
+        
+        while(itr.hasNext()){
+            current = itr.next();
+            //System.out.println("Current: " + current.getTitle());
+            rank = PhraseRanking.rankPhrase(current.getLyrics(), "she loves you");
+            
+            if(rank > -1){
+                songRanking.put(current, rank);
+            }
+        }
         System.out.println("Results: " + songRanking.size());
         for(Map.Entry<Song, Integer> entry : songRanking.entrySet()){
             System.out.println("Rank: " + entry.getValue() +" "+ entry.getKey());

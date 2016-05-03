@@ -87,13 +87,16 @@ public class SearchByLyricsPhrase {
             int key = map.getKey();
             ArrayList songList;
             songList = list.get(key);
-            for(int i = 0; i < songList.size() && count < 10; i++){
+            for(int i = 0; i < songList.size(); i++){
                 Song current = (Song) songList.get(i);
-                System.out.println(key +" "+ current.getArtist() +", "+ current.getTitle());
+                if(count < 10){
+                    System.out.println(key +" "+ current.getArtist() +", "+ current.getTitle());
+                }
                 count++;
             }
-            
         }
+        System.out.println("Total number of songs: " + count);
+        System.out.println("");
     }
     
 
