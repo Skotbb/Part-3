@@ -36,9 +36,7 @@ public class SearchByLyricsPhrase {
      */
     public Song[] search(String lyricPhrase) {
         TreeMap<Integer, ArrayList<Song>> matchList = new TreeMap<>(); //test
-        
-        TreeMap<Integer, Set<Song>> phraseMatchSongs = new TreeMap<>();
-        Set matchingSongs = null;
+       
         Song[] listToSearch = null;
         int rank;
 
