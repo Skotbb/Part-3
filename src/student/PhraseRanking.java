@@ -51,8 +51,8 @@ public class PhraseRanking {
         //If Lyrics contain the exact phrase
         if (lyrics.contains(lyricsPhrase)) { 
             return lyricsPhrase.length();
-        } 
-
+        }
+        
         //If Lyrics contain all words in the phrase, separately
         else if (lyricSet.containsAll(Arrays.asList(phraseArray))) { //If Lyrics contain all words in the phrase
             StringBuffer tempSB = new StringBuffer();
