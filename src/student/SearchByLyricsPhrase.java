@@ -53,13 +53,7 @@ public class SearchByLyricsPhrase {
                     matchList.put(rank, new ArrayList<Song>());
                     matchList.get(rank).add(listToSearch[i]);
                 }
-//                matchingSongs = phraseMatchSongs.get(rank);
-//                phraseMatchSongs.put(rank, matchingSongs);
-//                if(matchingSongs == null){
-//                    matchingSongs = new TreeSet<>();
-//                    phraseMatchSongs.put(rank, matchingSongs);     
-//                }
-//                    matchingSongs.add(listToSearch[i]);
+
             }
         }
         // printing for testing
@@ -67,8 +61,10 @@ public class SearchByLyricsPhrase {
         printRank(matchList);
         
         ArrayList<Song> setOfAllSongs = new ArrayList<>();
-        for (Map.Entry<Integer, Set<Song>> map : phraseMatchSongs.entrySet()){
-            Set<Song> matches = map.getValue();
+
+        // changed the loop to work with arraylists
+        for (Map.Entry<Integer, ArrayList<Song>> map : matchList.entrySet()){
+            ArrayList<Song> matches = map.getValue();
             setOfAllSongs.addAll(matches);
         }
         Song[] results = new Song[setOfAllSongs.size()];
@@ -77,15 +73,21 @@ public class SearchByLyricsPhrase {
     }
         //A semi-clean way to print the ranked list.
     public void printRank(TreeMap<Integer, ArrayList<Song>> list){
+        int count = 0;
         for (Map.Entry<Integer, ArrayList<Song>> map : list.entrySet()){
             int key = map.getKey();
             ArrayList songList;
             songList = list.get(key);
             for(int i = 0; i < songList.size(); i++){
                 Song current = (Song) songList.get(i);
-                System.out.println(key +" "+ current.getArtist() +", "+ current.getTitle());
+                if(count < 10){
+                    System.out.println(key +" "+ current.getArtist() +", "+ current.getTitle());
+                }
+                count++;
             }
         }
+        System.out.println("Total number of songs: " + count);
+        System.out.println("");
     }
     
 
@@ -96,14 +98,9 @@ public class SearchByLyricsPhrase {
             SearchByLyricsPhrase searchLyricPhrase = new SearchByLyricsPhrase(sc);
 
             songResults = searchLyricPhrase.search("she loves you");
-            System.out.println("Searching for: she loves you");
-            System.out.println("\n\n\nMain results: \n");
-            // doesn't print rankings yet
-            for(int i = 0; i < songResults.length; i++){
-                System.out.println(songResults[i].getArtist() + "  " +
-                        songResults[i].getTitle());
-            }
-            System.out.println("Total songs: " + songResults.length);  
+            songResults = searchLyricPhrase.search("love love love");
+            songResults = searchLyricPhrase.search("school's out");
+  
         } catch (FileNotFoundException ex) {
             System.out.println("File not found");;
         }

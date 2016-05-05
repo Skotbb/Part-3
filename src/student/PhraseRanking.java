@@ -26,6 +26,7 @@ public class PhraseRanking {
 
     }
 /**Coded by Scott Thompson
+ * Modified by Angela Tucci
  * 
  * @param lyrics String of lyrics from the song being tested
  * @param lyricsPhrase String phrase that you want to check in the song
@@ -36,6 +37,7 @@ public class PhraseRanking {
         lyricsPhrase = lyricsPhrase.toLowerCase();
 
         String[] songLyrics = null, phraseArray = null, subArray = null;
+        String resetLyrics = "";
 
         ArrayList<String> lyricSet = new ArrayList<String>();
         ArrayList<String> subSet = new ArrayList<String>();
@@ -48,11 +50,21 @@ public class PhraseRanking {
             lyricSet.addAll(Arrays.asList(songLyrics));
         }
         
+         // in case the search phrase contains all words in a row, but are
+            // seperated by punctuation
+            StringBuilder resetAsString = new StringBuilder();
+            for(int i = 0; i < lyricSet.size(); i++){
+                resetAsString.append(lyricSet.get(i));
+                resetAsString.append(" ");
+            }
+            
+            resetLyrics = resetAsString.toString();
+            
         //If Lyrics contain the exact phrase
-        if (lyrics.contains(lyricsPhrase)) { 
+        if (lyrics.contains(lyricsPhrase) || resetLyrics.contains(lyricsPhrase)) { 
             return lyricsPhrase.length();
         } 
-
+        
         //If Lyrics contain all words in the phrase, separately
         else if (lyricSet.containsAll(Arrays.asList(phraseArray))) { //If Lyrics contain all words in the phrase
             StringBuffer tempSB = new StringBuffer();
@@ -108,12 +120,20 @@ public class PhraseRanking {
             //Start at the end of song and last word in phrase
             for(int i= wordInd.length-2; i >= 0; i--){
                 wordInd[i] = lyrics.lastIndexOf(phraseArray[i], wordInd[i+1]);
+                if(phraseArray[i].equals(phraseArray[i+1])){
+                    int letterCount = phraseArray[i].length();
+                    wordInd[i] = lyrics.lastIndexOf(phraseArray[i], wordInd[i+1] - letterCount);
+                }
             }
             firstWord = wordInd[0];
             
             //Start from the first word and make sure matches are as close as possible
             for(int i=1; i< phraseArray.length; i++){
                 wordInd[i] = lyrics.indexOf(phraseArray[i], wordInd[i-1]);
+                if(phraseArray[i].equals(phraseArray[i-1])){
+                    int letterCount = phraseArray[i].length();
+                    wordInd[i] = lyrics.indexOf(phraseArray[i], wordInd[i-1] + letterCount);
+                }
             }
             lastWord = wordInd[wordInd.length-1];
             
@@ -125,7 +145,8 @@ public class PhraseRanking {
             }
 
             if (firstWord != -1 && lastWord != -1) {
-                subLyrics = lyrics.substring(firstWord, lastWord);
+                int lastWordSize = phraseArray[phraseArray.length-1].length();
+                subLyrics = lyrics.substring(firstWord, lastWord+lastWordSize);
                 subArray = subLyrics.split("[^a-zA-Z]+");
                 subSet.clear();
                 subSet.addAll(Arrays.asList(subArray));
@@ -162,9 +183,9 @@ public class PhraseRanking {
         //Single song debug
 //        SearchByTitlePrefix sbt = new SearchByTitlePrefix(sc);
 //        Song[] testArray = new Song[10];
-//        testArray = sbt.search("laura");
+//        testArray = sbt.search("love");
 //        for (int i = 0; i < testArray.length; i++) {
-//            rank = PhraseRanking.rankPhrase(testArray[i].getLyrics(), "she loves you");
+//            rank = PhraseRanking.rankPhrase(testArray[i].getLyrics(), "love love love");
 //        }
 
         songSet.addAll(Arrays.asList(sc.getAllSongs()));
@@ -173,7 +194,7 @@ public class PhraseRanking {
         while(itr.hasNext()){
             current = itr.next();
             //System.out.println("Current: " + current.getTitle());
-            rank = PhraseRanking.rankPhrase(current.getLyrics(), "You can't always get what you want");
+            rank = PhraseRanking.rankPhrase(current.getLyrics(), "she loves you");
             
             if(rank > -1){
                 songRanking.put(current, rank);
